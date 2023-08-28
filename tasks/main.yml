@@ -1,42 +1,30 @@
----  
-  - name: gather_facts
-    gather_facts:
+  - name: Install Docker
+    ansible.builtin.package:
+      name:
+        - docker
+        - docker.io
+        - docker-compose
+      state: present 
 
-  - name: Tag - Setup
-    ansible.builtin.import_tasks:
-      file: tag_setup.yml
-    tags:
-      - setup
-      - baseline
-      - never
-  
-  - name: Tag - Start
-    ansible.builtin.import_tasks:
-      file: tag_start.yml
-    tags:
-      - start
-      - run
-      - never
+  - name: Change default IP
+    ansible.builtin.template:
+      src: "{{ role_path }}/templates/daemon.json.j2"
+      dest: /etc/docker/daemon.json
+      backup: true
+      owner: root
+      group: root
+      mode: 700
+    register: register_docker_daemon_template
 
-  - name: Tag - Stop
-    ansible.builtin.import_tasks:
-      file: tag_stop.yml
-    tags:
-      - stop
-      - kill
-      - never
+  - name: Restart docker service when the template is updated
+    when: register_docker_daemon_template.changed
+    ansible.builtin.systemd_service:
+      name: docker.service
+      enabled: true
+      state: "restarted"
 
-  - name: Tag - Backup
-    ansible.builtin.import_tasks:
-      file: tag_backup.yml
-    tags:
-      - backup
-      - never
 
-  - name: Tag - Update
-    ansible.builtin.import_tasks:
-      file: tag_update.yml
-    tags:
-      - update
-      - upgrade
-      - never
+# TODO:
+# - validate json file
+# - bip variable
+# - Create applications network - maybe
