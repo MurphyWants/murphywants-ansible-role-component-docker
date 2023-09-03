@@ -1,8 +1,3 @@
 # variable: True
 ---
-murphywants:
-  component:
-    docker:
-      bridge_ip: "10.255.0.1/24"
-
-#COMPONENT_DOCKER_BRIDGE_IP: "10.255.0.1/24" # In CIDR notation
+DOCKER_BRIDGE_IP: "10.255.0.1/24"
