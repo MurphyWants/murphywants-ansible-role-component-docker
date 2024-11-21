@@ -1,10 +1,10 @@
-  - name: Install Docker
+  - name: Remove Ubuntu Provided Docker
     ansible.builtin.package:
       name:
-        - docker
         - docker.io
-        - docker-compose
-      state: present 
+        - docker-compose-v2
+#        - docker-compose-plugin
+      state: absent 
 
   - name: Change default IP
     ansible.builtin.template:
@@ -23,8 +23,52 @@
       enabled: true
       state: "restarted"
 
+  - name: Install docker-compose plugin (Ubuntu)
+    block: 
+      - name: Install ca-certificates curl
+        ansible.builtin.package:
+          name: 
+            - ca-certificates
+            - curl
+          state: present
+
+      - name: Copy docker gpg key
+        ansible.builtin.copy:
+          src: "{{ role_path }}/files/docker-ubuntu-repo-gpg-key.gpg"
+          dest: /etc/apt/keyrings/docker.asc
+      
+      - name: Copy nvidia gpg key
+        ansible.builtin.copy:
+          src: "{{ role_path }}/files/nvidia-ubuntu-repo-gpg-key.gpg"
+          dest: /etc/apt/keyrings/nvidia.asc
+
+      - name: Create repo file
+        ansible.builtin.template:
+          src: "{{ role_path }}/templates/docker-repo.list.apt.j2"
+          dest: "/etc/apt/sources.list.d/docker-repo.list"
+
+      - name: Install docker-compose-plugin
+        ansible.builtin.apt:
+          update_cache: true
+          state: present
+          name: 
+            - docker-ce 
+            - docker-ce-cli 
+            - containerd.io 
+            - docker-buildx-plugin 
+            - docker-compose-plugin
+
+      - name: Start docker service 
+        ansible.builtin.systemd_service:
+          name: docker
+          state: started
+          enabled: true
+    when: 
+      - ansible_facts.distribution == "Ubuntu"
 
 # TODO:
 # - validate json file
 # - bip variable
 # - Create applications network - maybe
+
+# ansible_facts.distribution_release

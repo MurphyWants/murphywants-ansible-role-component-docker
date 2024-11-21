@@ -1,0 +1,5 @@
+# docker.io
+deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu   {{ ansible_facts.distribution_release }} stable
+
+# nvidia container tools
+deb [signed-by=/etc/apt/keyrings/nvidia.asc] https://nvidia.github.io/libnvidia-container/stable/deb/$(ARCH) /
