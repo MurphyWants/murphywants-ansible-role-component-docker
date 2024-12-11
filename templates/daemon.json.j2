@@ -1,3 +1,7 @@
 {
-  "bip": "{{ DOCKER_BRIDGE_IP }}"
+  "bip": "{{ DOCKER_BRIDGE_IP }}",
+  "default-address-pools":
+  [
+    {{ DOCKER_DEFAULT_ADDRESS_SPACE_JSON }}
+  ]
 }

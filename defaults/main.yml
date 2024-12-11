@@ -1,3 +1,12 @@
 # variable: True
 ---
 DOCKER_BRIDGE_IP: "10.255.0.1/24"
+DOCKER_DEFAULT_ADDRESS_SPACE_JSON: |
+  {
+    "base": "10.0.254.0/24",
+    "size": 28
+  },
+  {
+    "base": "10.0.253.0/24",
+    "size": 28
+  }
